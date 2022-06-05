@@ -1,8 +1,10 @@
 const User = require('../models/user');
-const {OAuth2Client} = require('google-auth-library');
+const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 
-const client = new OAuth2Client("644150943784-dd4aaim7fuvgemorumocbbcgb4rmvdel.apps.googleusercontent.com");
+const client = new OAuth2Client(
+  '644150943784-dd4aaim7fuvgemorumocbbcgb4rmvdel.apps.googleusercontent.com'
+);
 
 exports.signup = async (req, res) => {
   try {
@@ -10,19 +12,19 @@ exports.signup = async (req, res) => {
     console.log(req.body);
     const user = new User(req.body);
     await user.save((err, data) => {
-      if(err){
+      if (err) {
         return res.status(400).send('Signup failed');
       }
 
       console.log('signup successful');
-      const {_id, email, name} = data;
-      res.json({user: {_id, name, email}});
+      const { _id, email, name } = data;
+      res.json({ user: { _id, name, email } });
     });
   } catch (e) {
     console.log(e);
     res.status(400).send(e);
   }
-}
+};
 
 exports.login = async (req, res) => {
   try {
@@ -36,14 +38,14 @@ exports.login = async (req, res) => {
     );
     console.log('found');
     const token = await user.generateAuthToken();
-    const {_id, name, email} = user;
-    res.json({ user: {_id, name, email}, token });
+    const { _id, name, email } = user;
+    res.json({ user: { _id, name, email }, token });
   } catch (e) {
     console.log('something went wrong');
     console.log(e);
     res.status(400).send(e);
   }
-}
+};
 
 // exports.logout = async (req, res) => {
 //   try {
@@ -59,71 +61,80 @@ exports.login = async (req, res) => {
 //   }
 // }
 
-exports.googleLogin = async(req, res) => {
+exports.googleLogin = async (req, res) => {
   try {
     console.log('Inside google Login');
-    const {tokenId} = req.body;
-    
-    client.verifyIdToken({idToken: tokenId, audience: "644150943784-dd4aaim7fuvgemorumocbbcgb4rmvdel.apps.googleusercontent.com"}).then((response) => {
-      // console.log(response.payload);
-      const {email_verified, name, email} = response.payload;
+    const { tokenId } = req.body;
 
-      if(email_verified) {
-        console.log('email is verified');
-        User.findOne({email}).exec((err, user) => {
-          if(err) {
-            console.log(e);
-            return res.status(400).json({
-              error: "Something went wrong..."
-            })
-          }else {
-            if(user) {
-              console.log('User found');
-              const token = user.generateAuthToken();
-              const {_id, name, email} = user;
+    client
+      .verifyIdToken({
+        idToken: tokenId,
+        audience:
+          '644150943784-dd4aaim7fuvgemorumocbbcgb4rmvdel.apps.googleusercontent.com',
+      })
+      .then((response) => {
+        // console.log(response.payload);
+        const { email_verified, name, email } = response.payload;
 
-              res.json({
-                token, 
-                user: {_id, name, email}
-              })
-            } else {
-              console.log('Creating user');
-              let password = email+'helloworld';
-              const newUser = new User({name, email, password});
-              newUser.save((err, data) => {
-                if(err) {
-                  console.log('Error in creating user', err);
-                  return res.status(400).json({
-                    error: "Something went wrong..."
-                  })
-                }
-
-                const token = jwt.sign({_id: data._id}, 'helloworld', {expiresIn: '7d'});
-                const {_id, name, email} = newUser;
-                console.log('User created successfully');
-                res.json({
-                  token, 
-                  user: {_id, name, email}
-                })
-
+        if (email_verified) {
+          console.log('email is verified');
+          User.findOne({ email }).exec((err, user) => {
+            if (err) {
+              console.log(e);
+              return res.status(400).json({
+                error: 'Something went wrong...',
               });
+            } else {
+              if (user) {
+                console.log('User found');
+                const token = user.generateAuthToken();
+                const { _id, name, email } = user;
+
+                res.json({
+                  token,
+                  user: { _id, name, email },
+                });
+              } else {
+                console.log('Creating user');
+                let password = email + 'helloworld';
+                const newUser = new User({ name, email, password });
+                newUser.save((err, data) => {
+                  if (err) {
+                    console.log('Error in creating user', err);
+                    return res.status(400).json({
+                      error: 'Something went wrong...',
+                    });
+                  }
+
+                  const token = jwt.sign({ _id: data._id }, 'helloworld', {
+                    expiresIn: '7d',
+                  });
+                  const { _id, name, email } = newUser;
+                  console.log('User created successfully');
+                  res.json({
+                    token,
+                    user: { _id, name, email },
+                  });
+                });
+              }
             }
-          }
-        })
-      }else {
-        console.log('Email is not verified');
-      }
-    })
+          });
+        } else {
+          console.log('Email is not verified');
+        }
+      });
   } catch (e) {
     console.log(e);
-    res.status(400).send('Something went wrong...')
+    res.status(400).send('Something went wrong...');
   }
-}
+};
 
-exports.authCheck = async(req, res) => {
+exports.authCheck = async (req, res) => {
   try {
     const SECRET_STRING = 'helloworld';
     console.log('Inside auth');
+    console.log(req.header);
+    console.log(req.body);
     const token = req.header('Authorization').replace('Bearer ', '');
     const decoded = jwt.verify(token, SECRET_STRING);
     const user = await User.findOne({ _id: decoded._id });
@@ -132,14 +143,13 @@ exports.authCheck = async(req, res) => {
       throw new Error();
     }
 
-    const {_id, name, email} = user;
+    const { _id, name, email } = user;
     res.json({
       token,
-      user: {_id, name, email}
-    })
+      user: { _id, name, email },
+    });
   } catch (e) {
     console.log(e);
     res.status(401).send({ error: 'Please Authenticate' });
   }
-
-}
+};

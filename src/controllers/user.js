@@ -134,8 +134,7 @@ exports.googleLogin = async (req, res) => {
               } else {
                 console.log('Creating user');
                 let password = email + 'helloworld';
-                let emailIsVerified = true;
-                const newUser = new User({ name, email, password, emailIsVerified});
+                const newUser = new User({ name, email, password});
                 newUser.save((err, data) => {
                   if (err) {
                     console.log('Error in creating user', err);

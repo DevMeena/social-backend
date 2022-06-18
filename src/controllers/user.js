@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 const password = require('secure-random-password');
 const bcrypt = require('bcrypt');
 
@@ -9,39 +9,44 @@ const client = new OAuth2Client(
   '644150943784-dd4aaim7fuvgemorumocbbcgb4rmvdel.apps.googleusercontent.com'
 );
 
-exports.verifyEmail = async(req, res) => {
+exports.verifyEmail = async (req, res) => {
   try {
-    let otp = password.randomPassword({ length: 6, characters: password.digits });
+    let otp = password.randomPassword({
+      length: 6,
+      characters: password.digits,
+    });
     let mailOptions = {
       from: '"Connect Book" <connectbook8@gmail.com>', // sender address
       to: req.body.email, // list of receivers
-      subject: "Verify Your email address", // Subject line
-      text: `Dear ${req.body.name}, One time password to verify your gmail is ${otp}`
+      subject: 'Verify Your email address', // Subject line
+      text: `Dear ${req.body.name}, One time password to verify your gmail is ${otp}`,
     };
     await this.sendMail(mailOptions);
 
     let hashedOtp = await bcrypt.hash(otp, 8);
 
-    res.json({hashedOtp});
-    
+    res.json({ hashedOtp });
   } catch (err) {
     res.status(400).send(err);
   }
-}
+};
 
-exports.verifyToken = async(req, res) => {
+exports.verifyToken = async (req, res) => {
+  console.log(req.body);
   try {
-    const isVerified = await bcrypt.compare(req.body.otp, req.body.hashedOtp);
-    if(!isVerified){
+    const isVerified = await bcrypt.compare(
+      req.body.otp,
+      req.body.hashedOtp.hashedOtp
+    );
+    if (!isVerified) {
       throw new Error('Please enter valid otp');
     }
 
-    res.json({isEmailVerified: true});
-
+    res.json({ isEmailVerified: true });
   } catch (err) {
     res.status(400).send(err);
   }
-}
+};
 
 exports.signup = async (req, res) => {
   try {
@@ -134,7 +139,7 @@ exports.googleLogin = async (req, res) => {
               } else {
                 console.log('Creating user');
                 let password = email + 'helloworld';
-                const newUser = new User({ name, email, password});
+                const newUser = new User({ name, email, password });
                 newUser.save((err, data) => {
                   if (err) {
                     console.log('Error in creating user', err);
@@ -193,14 +198,13 @@ exports.authCheck = async (req, res) => {
   }
 };
 
-exports.sendMail = async(mailOptions) => {
-
+exports.sendMail = async (mailOptions) => {
   let transporter = nodemailer.createTransport({
-    service: 'gmail', 
+    service: 'gmail',
     auth: {
       user: 'connectbook8@gmail.com',
-      pass: 'xvvfkykexrncvuil'
-    }
+      pass: 'xvvfkykexrncvuil',
+    },
   });
 
   // let mailOptions = {
@@ -211,11 +215,10 @@ exports.sendMail = async(mailOptions) => {
   //   html: "<b>Hello world?</b>", // html body
   // };
 
-  transporter.sendMail(mailOptions, function(err, info) {
-    if(err){
+  transporter.sendMail(mailOptions, function (err, info) {
+    if (err) {
       throw new Error('Please Enter a valid Email Address');
-    } else if(info.response.ok){
-      
+    } else if (info.response.ok) {
     }
-  })
-}
+  });
+};

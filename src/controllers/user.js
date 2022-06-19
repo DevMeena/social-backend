@@ -55,7 +55,8 @@ exports.signup = async (req, res) => {
     const user = new User(req.body);
     await user.save((err, data) => {
       if (err) {
-        return res.status(400).send('Signup failed');
+        console.log('sign up failure in try');
+        return res.status(400).send({ error: 'account already exists' });
       }
 
       console.log('signup successful');
@@ -63,6 +64,7 @@ exports.signup = async (req, res) => {
       res.json({ user: { _id, name, email } });
     });
   } catch (e) {
+    console.log('sign up failure');
     console.log(e);
     res.status(400).send(e);
   }

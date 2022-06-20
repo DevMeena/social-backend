@@ -83,6 +83,7 @@ exports.login = async (req, res) => {
     console.log('found');
     const token = await user.generateAuthToken();
     const { _id, name, email } = user;
+    console.log(user);
     res.json({ user: { _id, name, email }, token });
   } catch (e) {
     console.log('something went wrong');
@@ -134,10 +135,7 @@ exports.googleLogin = async (req, res) => {
                 const token = user.generateAuthToken();
                 const { _id, name, email } = user;
 
-                res.json({
-                  token,
-                  user: { _id, name, email },
-                });
+                res.json({ user: { _id, name, email }, token });
               } else {
                 console.log('Creating user');
                 let password = email + 'helloworld';
@@ -155,10 +153,7 @@ exports.googleLogin = async (req, res) => {
                   });
                   const { _id, name, email } = newUser;
                   console.log('User created successfully');
-                  res.json({
-                    token,
-                    user: { _id, name, email },
-                  });
+                  res.json({ user: { _id, name, email }, token });
                 });
               }
             }
@@ -173,32 +168,32 @@ exports.googleLogin = async (req, res) => {
   }
 };
 
-exports.authCheck = async (req, res) => {
-  try {
-    const SECRET_STRING = 'helloworld';
-    console.log('Inside auth');
-    console.log(req.header);
-    console.log(req.body);
-    const token = req.header('Authorization').replace('Bearer ', '');
-    const decoded = jwt.verify(token, SECRET_STRING);
-    const user = await User.findOne({ _id: decoded._id });
+// exports.authCheck = async (req, res) => {
+//   try {
+//     const SECRET_STRING = 'helloworld';
+//     console.log('Inside auth');
+//     console.log(req.header);
+//     console.log(req.body);
+//     const token = req.header('Authorization').replace('Bearer ', '');
+//     const decoded = jwt.verify(token, SECRET_STRING);
+//     const user = await User.findOne({ _id: decoded._id });
 
-    if (!user) {
-      throw new Error();
-    }
+//     if (!user) {
+//       throw new Error();
+//     }
 
-    req.user = user;
+//     req.user = user;
 
-    const { _id, name, email } = user;
-    res.json({
-      token,
-      user: { _id, name, email },
-    });
-  } catch (e) {
-    console.log(e);
-    res.status(401).send({ error: 'Please Authenticate' });
-  }
-};
+//     const { _id, name, email } = user;
+//     res.json({
+//       token,
+//       user: { _id, name, email },
+//     });
+//   } catch (e) {
+//     console.log(e);
+//     res.status(401).send({ error: 'Please Authenticate' });
+//   }
+// };
 
 exports.sendMail = async (mailOptions) => {
   let transporter = nodemailer.createTransport({

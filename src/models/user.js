@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    min: 3,
+    max: 20
   },
   email: {
     type: String,
@@ -30,8 +32,46 @@ const userSchema = new mongoose.Schema({
         throw new Error('Password cannot contain "password"');
       }
     },
+  }, 
+  profilePicture: {
+    type: String,
+    default: "",
+  }, 
+  coverPicture: {
+    type: String, 
+    default: "",
+  },
+  followers: {
+    type: Array,
+    default: [],
+  }, 
+  following: {
+    type: Array,
+    default: [],
+  }, 
+  isAdmin : {
+    type: Boolean, 
+    default: false,
+  },
+  desc: {
+    type: String, 
+    max: 50,
+  },
+  city: {
+    type: String, 
+    max: 50,
+  }, 
+  form: {
+    type: String,
+    max: 50,
+  }, 
+  relationship: {
+    type: Number,
+    enum: [1,2,3]
   }
-});
+},
+{timestamps: true}
+);
 
 userSchema.pre('save', async function (next) {
   const user = this;

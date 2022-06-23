@@ -66,16 +66,12 @@ exports.signup = async (req, res) => {
   } catch (e) {
     console.log('sign up failure');
     console.log(e);
-    res.status(400).send(e);
+    res.status(500).send(e);
   }
 };
 
 exports.login = async (req, res) => {
   try {
-    console.log('Inside Login');
-    console.log(req.body.email);
-    console.log(req.body.password);
-
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
@@ -88,7 +84,7 @@ exports.login = async (req, res) => {
   } catch (e) {
     console.log('something went wrong');
     console.log(e);
-    res.status(400).send(e);
+    res.status(500).send(e);
   }
 };
 

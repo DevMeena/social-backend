@@ -3,25 +3,25 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const userSchema = new mongoose.Schema(
+const postSchema = new mongoose.Schema(
   {
-    userId : {
-      type: String, 
-      required: true
-    }, 
-    desc : {
-      type: String, 
-      max: 500
-    }, 
-    img : {
-      type: String
-    }, 
+    userId: {
+      type: String,
+      required: true,
+    },
+    desc: {
+      type: String,
+      max: 500,
+    },
+    img: {
+      type: String,
+    },
     likes: {
-      types : Array,
-      default : []
+      types: Array,
+      default: [],
     },
   },
-  {timestamps: true}
+  { timestamps: true }
 );
 
 const Post = mongoose.model('Post', postSchema);

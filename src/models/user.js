@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
     type: Array,
     default: [],
   }, 
-  following: {
+  followings: {
     type: Array,
     default: [],
   }, 
@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema({
     type: String, 
     max: 50,
   }, 
-  form: {
+  from: {
     type: String,
     max: 50,
   }, 
@@ -75,7 +75,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save', async function (next) {
   const user = this;
-
+  
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
   }

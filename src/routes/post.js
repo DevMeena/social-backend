@@ -76,6 +76,7 @@ router.get('/timeline/all', cors(), auth, async (req, res) => {
   try {
     const currentUser = req.user;
     const userPosts = await Post.find({ userId: currentUser._id });
+    console.log('inside timeline : ', userPosts);
     const friendPosts = await Promise.all(
       currentUser.followings.map((friendId) => {
         return Post.find({ userId: friendId });

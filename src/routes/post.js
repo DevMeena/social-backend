@@ -11,6 +11,7 @@ router.post('/', cors(), auth, async (req, res) => {
     const savedPost = await newPost.save();
     res.status(200).json(savedPost);
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 });
@@ -76,7 +77,7 @@ router.get('/timeline/all', cors(), auth, async (req, res) => {
   try {
     const currentUser = req.user;
     const userPosts = await Post.find({ userId: currentUser._id });
-    console.log('inside timeline : ', userPosts);
+    // console.log('inside timeline : ', userPosts);
     const friendPosts = await Promise.all(
       currentUser.followings.map((friendId) => {
         return Post.find({ userId: friendId });

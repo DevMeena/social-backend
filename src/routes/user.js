@@ -6,7 +6,7 @@ const cors = require('cors');
 
 // update user/ Not password
 router.put("/:id", cors(), auth, async(req, res) => {
-    if(req.body._id === req.params.id){
+    if(req.user._id === req.params.id){
       try {
         const user = await User.findByIdAndUpdate(req.params.id, {
           $set: req.body,
@@ -22,7 +22,7 @@ router.put("/:id", cors(), auth, async(req, res) => {
 
 // Update Password
 router.put("/updatePassword/:id", cors(), auth, async(req,res) => {
-  if(req.body._id === req.params.id){
+  if(req.user._id === req.params.id){
     try {
       const user = req.user;
       user.password = req.body.password;

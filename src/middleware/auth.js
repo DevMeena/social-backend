@@ -5,7 +5,7 @@ const SECRET_STRING = 'helloworld';
 
 const auth = async (req, res, next) => {
   try {
-    console.log('Inside auth');
+    // console.log('Inside auth');
     const token = req.header('Authorization').replace('Bearer ', '');
     const decoded = jwt.verify(token, SECRET_STRING);
     const user = await User.findOne({ _id: decoded._id });

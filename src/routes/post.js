@@ -2,8 +2,20 @@ const express = require('express');
 const Post = require('../models/post');
 const auth = require('../middleware/auth');
 const cors = require('cors');
-
 const router = new express.Router();
+
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'src/public/images');
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.body.name);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 // Create Post
 router.post('/', cors(), auth, async (req, res) => {
   const newPost = new Post(req.body);
@@ -86,6 +98,16 @@ router.get('/timeline/all', cors(), auth, async (req, res) => {
     res.json(userPosts.concat(...friendPosts));
   } catch (err) {
     res.status(500).json(err);
+  }
+});
+
+// upload post image
+router.post('/upload', cors(), upload.single('file'), (req, res) => {
+  try {
+    return res.status(200).json('File uploded successfully');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
   }
 });
 

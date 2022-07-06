@@ -7,8 +7,10 @@ const {
   googleLogin,
   verifyEmail,
   verifyToken,
-  forgotPassword
+  forgotPassword,
 } = require('../controllers/auth'); // authCheck, logout
+
+// ! ALL ROUTES ACCESSIBLE FROM FRONTEND
 
 router.post('/verifyEmail', cors(), verifyEmail);
 router.post('/verifyToken', cors(), verifyToken);

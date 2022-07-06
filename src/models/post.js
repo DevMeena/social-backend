@@ -13,11 +13,12 @@ const postSchema = new mongoose.Schema(
       type: String,
       max: 500,
     },
-    img: {
-      type: String,
+    photo: {
+      data: Buffer,
+      contentType: String,
     },
     likes: {
-      types: Array,
+      type: Array,
       default: [],
     },
   },

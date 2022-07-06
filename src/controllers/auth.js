@@ -39,7 +39,7 @@ exports.verifyToken = async (req, res) => {
       req.body.hashedOtp.hashedOtp
     );
     if (!isVerified) {
-      throw new Error('Please enter valid otp');
+      return res.status(400).send("Please enter a valid otp");
     }
 
     res.json({ isEmailVerified: true });
@@ -52,6 +52,13 @@ exports.signup = async (req, res) => {
   try {
     console.log('Inside signup');
     console.log(req.body);
+
+    const userFound = await User.findOne({email: req.body.email});
+    if(userFound){
+      console.log(userFound);
+      return res.status(400).send("Email already registered");
+    }
+
     const user = new User(req.body);
     await user.save((err, data) => {
       if (err) {
@@ -164,6 +171,36 @@ exports.googleLogin = async (req, res) => {
   }
 };
 
+exports.forgotPassword = async(req, res) => {
+  try {
+    const user = await User.findOne({email: req.body.email});
+    if(!user){
+      return res.status(400).send("User not found");
+    }
+    
+    let newPassword = password.randomPassword({
+      length: 10
+    });
+
+    user.password = newPassword;
+    await user.save();
+
+    let mailOptions = {
+      from: '"Connect Book" <connectbook8@gmail.com>', // sender address
+      to: req.body.email, // list of receivers
+      subject: 'New Password Details', // Subject line
+      text: `Dear ${req.body.name}, your new password to login is ${newPassword}`,
+    };
+    await this.sendMail(mailOptions);
+
+
+    res.status(200).send("new login password sent to email address"); 
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+}
+
 // exports.authCheck = async (req, res) => {
 //   try {
 //     const SECRET_STRING = 'helloworld';
@@ -199,14 +236,6 @@ exports.sendMail = async (mailOptions) => {
       pass: 'xvvfkykexrncvuil',
     },
   });
-
-  // let mailOptions = {
-  //   from: '"Connect Book" <connectbook8@gmail.com>', // sender address
-  //   to: 'anujkumarjaimini025@gmail.com', // list of receivers
-  //   subject: "New Password Details", // Subject line
-  //   text: "Hello world?", // plain text body
-  //   html: "<b>Hello world?</b>", // html body
-  // };
 
   transporter.sendMail(mailOptions, function (err, info) {
     if (err) {

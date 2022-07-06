@@ -7,6 +7,7 @@ const {
   googleLogin,
   verifyEmail,
   verifyToken,
+  forgotPassword
 } = require('../controllers/auth'); // authCheck, logout
 
 router.post('/verifyEmail', cors(), verifyEmail);
@@ -15,6 +16,8 @@ router.post('/signup', cors(), signup);
 
 router.post('/login', cors(), login);
 router.post('/googlelogin', cors(), googleLogin);
+
+router.post('/forgotPassword', cors(), forgotPassword);
 
 // router.get('/user/logout', cors(), logout);
 // router.post('/user/authCheck', cors(), authCheck);

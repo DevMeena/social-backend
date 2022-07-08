@@ -85,7 +85,7 @@ exports.login = async (req, res) => {
     );
     console.log('found');
     const token = await user.generateAuthToken();
-    const { _id, name, email } = user;
+    const { _id, name, email, profilePicture, coverPicture } = user;
     console.log(user);
     res.json({
       user: { _id, name, email, profilePicture, coverPicture },

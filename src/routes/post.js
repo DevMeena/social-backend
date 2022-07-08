@@ -199,9 +199,28 @@ router.put('/:id/like', cors(), async (req, res) => {
   }
 });
 
+// get user posts
+
+router.get('/timeline/all/:userId', cors(), auth, async (req, res) => {
+  try {
+    // const currentUser = req.user;
+    const userPosts = await Post.find({ userId: req.params.userId });
+    // console.log('inside timeline : ', userPosts);
+    // const friendPosts = await Promise.all(
+    //   currentUser.followings.map((friendId) => {
+    //     return Post.find({ userId: friendId });
+    //   })
+    // );
+    res.status(200).json(userPosts);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 // get timeline posts
 
 router.get('/timeline/all', cors(), auth, async (req, res) => {
+  console.log(req.user);
   try {
     const currentUser = req.user;
     const userPosts = await Post.find({ userId: currentUser._id });

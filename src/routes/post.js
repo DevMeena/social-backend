@@ -73,15 +73,20 @@ router.post('/', cors(), (req, res) => {
     console.log(fields);
 
     const newPost = new Post(fields);
-
-    if (file.photo) {
-      if (file.photo.size > 5000000)
-        return res.status(500).json({ error: 'file size too big' });
+    console.log(file);
+    console.log(fields.photo);
+    if (fields?.photo !== 'null') {
+      console.log('photo');
+      if (file.photo) {
+        if (file.photo.size > 5000000)
+          return res.status(500).json({ error: 'file size too big' });
+      }
+      newPost.photo.data = fs.readFileSync(file.photo.filepath);
+      newPost.photo.contentType = file.photo.type;
     }
 
-    newPost.photo.data = fs.readFileSync(file.photo.filepath);
-    newPost.photo.contentType = file.photo.type;
-    console.log('photo');
+    console.log(newPost);
+
     newPost.save((err, post) => {
       if (err) {
         console.log(err);

@@ -10,6 +10,7 @@ const path = require('path');
 // const upload = require('./routes/upload');
 const Grid = require('gridfs-stream');
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 const bodyparser = require('body-parser');
 

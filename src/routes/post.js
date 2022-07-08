@@ -153,7 +153,7 @@ router.put('/:postId', cors(), (req, res) => {
 });
 
 // Delete post
-router.delete('/:postId', cors(), async (req, res) => {
+router.delete('/:postId', cors(), auth, async (req, res) => {
   // console.log(req.params.postId);
   // console.log(req.body);
 
@@ -162,13 +162,13 @@ router.delete('/:postId', cors(), async (req, res) => {
     console.log(post.desc);
     console.log(post.userId);
     console.log(req.user);
-    console.log(post.userId === req.user._id);
-    // if (post?.userId === req.user._id) {
-    await post.deleteOne();
-    res.status(200).json('The post has been deleted');
-    // } else {
-    //   res.status(403).json('You can delete only your post');
-    // }
+    console.log(post.userId === req.user._id.toString());
+    if (post?.userId === req.user._id.toString()) {
+      await post.deleteOne();
+      res.status(200).json('The post has been deleted');
+    } else {
+      res.status(403).json('You can delete only your post');
+    }
   } catch (err) {
     res.status(500).json(err);
   }

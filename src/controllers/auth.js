@@ -39,7 +39,7 @@ exports.verifyToken = async (req, res) => {
       req.body.hashedOtp.hashedOtp
     );
     if (!isVerified) {
-      return res.status(400).send("Please enter a valid otp");
+      return res.status(400).send('Please enter a valid otp');
     }
 
     res.json({ isEmailVerified: true });
@@ -53,10 +53,10 @@ exports.signup = async (req, res) => {
     console.log('Inside signup');
     console.log(req.body);
 
-    const userFound = await User.findOne({email: req.body.email});
-    if(userFound){
+    const userFound = await User.findOne({ email: req.body.email });
+    if (userFound) {
       console.log(userFound);
-      return res.status(400).send("Email already registered");
+      return res.status(400).send('Email already registered');
     }
 
     const user = new User(req.body);
@@ -87,7 +87,10 @@ exports.login = async (req, res) => {
     const token = await user.generateAuthToken();
     const { _id, name, email } = user;
     console.log(user);
-    res.json({ user: { _id, name, email }, token });
+    res.json({
+      user: { _id, name, email, profilePicture, coverPicture },
+      token,
+    });
   } catch (e) {
     console.log('something went wrong');
     console.log(e);
@@ -136,9 +139,12 @@ exports.googleLogin = async (req, res) => {
               if (user) {
                 console.log('User found');
                 const token = user.generateAuthToken();
-                const { _id, name, email } = user;
+                const { _id, name, email, profilePicture, coverPicture } = user;
 
-                res.json({ user: { _id, name, email }, token });
+                res.json({
+                  user: { _id, name, email, profilePicture, coverPicture },
+                  token,
+                });
               } else {
                 console.log('Creating user');
                 let password = email + 'helloworld';
@@ -156,7 +162,10 @@ exports.googleLogin = async (req, res) => {
                   });
                   const { _id, name, email } = newUser;
                   console.log('User created successfully');
-                  res.json({ user: { _id, name, email }, token });
+                  res.json({
+                    user: { _id, name, email, profilePicture, coverPicture },
+                    token,
+                  });
                 });
               }
             }
@@ -171,15 +180,15 @@ exports.googleLogin = async (req, res) => {
   }
 };
 
-exports.forgotPassword = async(req, res) => {
+exports.forgotPassword = async (req, res) => {
   try {
-    const user = await User.findOne({email: req.body.email});
-    if(!user){
-      return res.status(400).send("User not found");
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(400).send('User not found');
     }
-    
+
     let newPassword = password.randomPassword({
-      length: 10
+      length: 10,
     });
 
     user.password = newPassword;
@@ -193,13 +202,12 @@ exports.forgotPassword = async(req, res) => {
     };
     await this.sendMail(mailOptions);
 
-
-    res.status(200).send("new login password sent to email address"); 
+    res.status(200).send('new login password sent to email address');
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
   }
-}
+};
 
 // exports.authCheck = async (req, res) => {
 //   try {

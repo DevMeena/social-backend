@@ -70,6 +70,11 @@ const userSchema = new mongoose.Schema(
       type: Number,
       enum: [1, 2, 3],
     },
+    gender: {
+      type: Number,
+      enum: [1, 2, 3],
+    },
+    birthDay: { type: Date },
   },
   { timestamps: true }
 );

@@ -70,7 +70,7 @@ router.post('/', cors(), (req, res) => {
       return res.status(500).json(err);
     }
 
-    console.log(fields);
+    // console.log(fields);
 
     const newPost = new Post(fields);
     console.log(file);
@@ -85,7 +85,7 @@ router.post('/', cors(), (req, res) => {
       newPost.photo.contentType = file.photo.type;
     }
 
-    console.log(newPost);
+    // console.log(newPost);
 
     newPost.save((err, post) => {
       if (err) {

@@ -85,10 +85,26 @@ exports.login = async (req, res) => {
     );
     console.log('found');
     const token = await user.generateAuthToken();
-    const { _id, name, email, profilePicture, coverPicture } = user;
+    const {
+      _id,
+      name,
+      email,
+      profilePicture,
+      coverPicture,
+      followers,
+      followings,
+    } = user;
     console.log(user);
     res.json({
-      user: { _id, name, email, profilePicture, coverPicture },
+      user: {
+        _id,
+        name,
+        email,
+        profilePicture,
+        coverPicture,
+        followers,
+        followings,
+      },
       token,
     });
   } catch (e) {
@@ -139,10 +155,26 @@ exports.googleLogin = async (req, res) => {
               if (user) {
                 console.log('User found');
                 const token = user.generateAuthToken();
-                const { _id, name, email, profilePicture, coverPicture } = user;
+                const {
+                  _id,
+                  name,
+                  email,
+                  profilePicture,
+                  coverPicture,
+                  followers,
+                  followings,
+                } = user;
 
                 res.json({
-                  user: { _id, name, email, profilePicture, coverPicture },
+                  user: {
+                    _id,
+                    name,
+                    email,
+                    followers,
+                    followings,
+                    profilePicture,
+                    coverPicture,
+                  },
                   token,
                 });
               } else {
@@ -160,10 +192,26 @@ exports.googleLogin = async (req, res) => {
                   const token = jwt.sign({ _id: data._id }, 'helloworld', {
                     expiresIn: '7d',
                   });
-                  const { _id, name, email } = newUser;
+                  const {
+                    _id,
+                    name,
+                    email,
+                    profilePicture,
+                    coverPicture,
+                    followers,
+                    followings,
+                  } = newUser;
                   console.log('User created successfully');
                   res.json({
-                    user: { _id, name, email, profilePicture, coverPicture },
+                    user: {
+                      _id,
+                      name,
+                      email,
+                      profilePicture,
+                      coverPicture,
+                      followers,
+                      followings,
+                    },
                     token,
                   });
                 });

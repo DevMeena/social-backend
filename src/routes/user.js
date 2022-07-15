@@ -13,7 +13,7 @@ router.put('/:id', cors(), auth, async (req, res) => {
       });
       res.status(200).json('Account has been successfully updated');
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json(err.message);
     }
   } else {
     return res.status(403).json('You can only update your account');
@@ -29,7 +29,7 @@ router.put('/updatePassword/:id', cors(), auth, async (req, res) => {
       await user.save();
       return res.status(200).json('Password Updated Successfully');
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json(err.message);
     }
   } else {
     return res.status(403).json('You can only update your password');
@@ -51,7 +51,7 @@ router.delete('/:id', cors(), auth, async (req, res) => {
 });
 
 // get a user
-router.get('/:id', cors(), auth, async (req, res) => {
+router.get('/:id/getuser', cors(), auth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     const { password, updatedAt, ...other } = user._doc;
@@ -79,7 +79,7 @@ router.put('/:id/follow', cors(), auth, async (req, res) => {
         res.status(403).json('You already follow this user');
       }
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json(err.message);
     }
   } else {
     res.status(403).json("You can't follow yourself");
@@ -102,11 +102,63 @@ router.put('/:id/unfollow', cors(), auth, async (req, res) => {
         res.status(403).json("You don't follow this user");
       }
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json(err.message);
     }
   } else {
     res.status(403).json("You can't unfollow yourself");
   }
 });
+
+// get followers
+router.get('/followers', cors(), auth, async(req, res) => {
+  try {
+    const user = req.user;
+    let followers = [];
+    await Promise.all(user.followers.map(async(id) => {
+      const follower = await User.findById(id);
+      const {_id, name, profilePicture} = follower;
+      followers.push({_id, name, profilePicture});
+    }));
+
+    console.log('Followers list', followers);
+    res.status(200).send(followers);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+})
+
+// get followings
+router.get('/followings', cors(), auth, async(req, res) => {
+  try {
+    const user = req.user;
+    let followings = [];
+    await Promise.all(user.followings.map(async(id) => {
+      const following = await User.findById(id);
+      const {_id, name, profilePicture} = following;
+      followings.push({_id, name, profilePicture});
+    }));
+    console.log('Followings list',followings);
+    res.status(200).send(followings);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+})
+
+router.get('/search/:key', cors(), auth, async(req, res) => {
+  try {
+    const regex = new RegExp(req.params.key, 'i');
+    console.log(regex);
+    const data = await User.find({
+      "$or" : [
+        {name: regex},
+        {email: regex}
+      ]
+    });
+
+    res.status(200).send(data);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+})
 
 module.exports = router;

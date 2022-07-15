@@ -67,12 +67,10 @@ const userSchema = new mongoose.Schema(
       max: 50,
     },
     relationship: {
-      type: Number,
-      enum: [1, 2, 3],
+      type: String,
     },
     gender: {
-      type: Number,
-      enum: [1, 2, 3],
+      type: String,
     },
     birthDay: { type: Date },
   },

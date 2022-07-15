@@ -51,7 +51,7 @@ router.delete('/:id', cors(), auth, async (req, res) => {
 });
 
 // get a user
-router.get('/:id/getuser', cors(), auth, async (req, res) => {
+router.get('/:id', cors(), auth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     const { password, updatedAt, ...other } = user._doc;
@@ -110,10 +110,10 @@ router.put('/:id/unfollow', cors(), auth, async (req, res) => {
 });
 
 // get followers
-router.get('/followers', cors(), auth, async(req, res) => {
+router.get('/:id/followers', cors(), auth, async(req, res) => {
   try {
-    const user = req.user;
-    let followers = [];
+    const user = await User.findById(req.params.id);
+    const followers = [];
     await Promise.all(user.followers.map(async(id) => {
       const follower = await User.findById(id);
       const {_id, name, profilePicture} = follower;
@@ -128,9 +128,9 @@ router.get('/followers', cors(), auth, async(req, res) => {
 })
 
 // get followings
-router.get('/followings', cors(), auth, async(req, res) => {
+router.get('/:id/followings', cors(), auth, async(req, res) => {
   try {
-    const user = req.user;
+    const user = await User.findById(req.params.id);
     let followings = [];
     await Promise.all(user.followings.map(async(id) => {
       const following = await User.findById(id);

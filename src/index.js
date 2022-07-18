@@ -5,6 +5,8 @@ const cors = require('cors');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const postRouter = require('./routes/post');
+const conversationRouter = require('./routes/conversation');
+const messageRouter = require('./routes/message');
 const multer = require('multer');
 const path = require('path');
 // const upload = require('./routes/upload');
@@ -28,6 +30,8 @@ app.use(express.json());
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/post', postRouter);
+app.use('/conversations', conversationRouter);
+app.use('/messages', messageRouter);
 
 connectDB();
 

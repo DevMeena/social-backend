@@ -70,6 +70,11 @@ router.post('/', cors(), auth, (req, res) => {
       return res.status(500).json(err);
     }
 
+    if (fields.photo === 'null' && fields.desc === '') {
+      console.log('fields are empty');
+      return res.status(500).json({ error: 'cannot create empty post' });
+    }
+
     // console.log(fields);
 
     const newPost = new Post(fields);

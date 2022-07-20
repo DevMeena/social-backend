@@ -55,7 +55,7 @@ router.get('/photo/:postId', (req, res, next) => {
 });
 
 // Create Post
-router.post('/', cors(), (req, res) => {
+router.post('/', cors(), auth, (req, res) => {
   // auth
   // , auth
   console.log(req.body);
@@ -115,11 +115,13 @@ router.post('/', cors(), (req, res) => {
 
 // !my update:
 
-router.put('/:postId', cors(), (req, res) => {
-  // auth
-  // , auth
-  console.log(req.body);
-  console.log('lets edit');
+router.put('/:postId', cors(), auth, (req, res) => {
+  let post = req.post;
+
+  if (post.userId !== req.user._id.toString()) {
+    console.log('cannot update others post');
+    return res.status(500).json({ error: 'cannot update others post' });
+  }
 
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
@@ -131,7 +133,6 @@ router.put('/:postId', cors(), (req, res) => {
     }
 
     console.log(fields);
-    let post = req.post;
     console.log(post.desc);
     post = _.extend(post, fields);
     // const newPost = new Post(fields);
@@ -170,9 +171,10 @@ router.delete('/:postId', cors(), auth, async (req, res) => {
     console.log(post.userId === req.user._id.toString());
     if (post?.userId === req.user._id.toString()) {
       await post.deleteOne();
-      res.status(200).json('The post has been deleted');
+      return res.status(200).json({ message: 'The post has been deleted' });
     } else {
-      res.status(403).json('You can delete only your post');
+      console.log('You can delete only your post');
+      return res.status(403).json({ error: 'You can delete only your post' });
     }
   } catch (err) {
     res.status(500).json(err);
@@ -180,7 +182,7 @@ router.delete('/:postId', cors(), auth, async (req, res) => {
 });
 
 // Like/dislike post
-router.put('/:id/like', cors(), async (req, res) => {
+router.put('/:id/like', cors(), auth, async (req, res) => {
   console.log('req.body is : ');
   console.log(req.body);
 
@@ -209,13 +211,10 @@ router.put('/:id/like', cors(), async (req, res) => {
 router.get('/timeline/all/:userId', cors(), auth, async (req, res) => {
   try {
     // const currentUser = req.user;
-    const userPosts = await Post.find({ userId: req.params.userId });
-    // console.log('inside timeline : ', userPosts);
-    // const friendPosts = await Promise.all(
-    //   currentUser.followings.map((friendId) => {
-    //     return Post.find({ userId: friendId });
-    //   })
-    // );
+    const userPosts = await Post.find({ userId: req.params.userId }).sort({
+      createdAt: -1,
+    });
+
     res.status(200).json(userPosts);
   } catch (err) {
     res.status(500).json(err);
@@ -228,13 +227,18 @@ router.get('/timeline/all', cors(), auth, async (req, res) => {
   console.log(req.user);
   try {
     const currentUser = req.user;
-    const userPosts = await Post.find({ userId: currentUser._id });
-    // console.log('inside timeline : ', userPosts);
+    const userPosts = await Post.find({ userId: currentUser._id }).sort({
+      createdAt: -1,
+    });
+
     const friendPosts = await Promise.all(
       currentUser.followings.map((friendId) => {
-        return Post.find({ userId: friendId });
+        return Post.find({ userId: friendId }).sort({
+          createdAt: -1,
+        });
       })
     );
+
     res.json(userPosts.concat(...friendPosts));
   } catch (err) {
     res.status(500).json(err);

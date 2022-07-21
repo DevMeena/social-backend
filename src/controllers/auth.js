@@ -230,6 +230,7 @@ exports.googleLogin = async (req, res) => {
 
 exports.forgotPassword = async (req, res) => {
   try {
+    console.log(req.body);
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(400).send('User not found');
@@ -289,12 +290,13 @@ exports.sendMail = async (mailOptions) => {
     service: 'gmail',
     auth: {
       user: 'connectbook8@gmail.com',
-      pass: 'xvvfkykexrncvuil',
+      pass: 'mwjeglacuhjvumxn',
     },
   });
 
   transporter.sendMail(mailOptions, function (err, info) {
     if (err) {
+      // console.log(err);
       throw new Error('Please Enter a valid Email Address');
     } else if (info.response.ok) {
     }

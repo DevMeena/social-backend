@@ -25,7 +25,7 @@ const { photo } = require('../middleware/photo');
 // get post
 router.get('/:id', cors(), auth, async (req, res) => {
   try {
-    const post = Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id);
     res.status(200).json(post);
   } catch (err) {
     res.status(500).json(err);

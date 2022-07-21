@@ -229,6 +229,8 @@ exports.googleLogin = async (req, res) => {
 };
 
 exports.forgotPassword = async (req, res) => {
+  console.log(req.body.name, req.body.email);
+
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
@@ -295,7 +297,8 @@ exports.sendMail = async (mailOptions) => {
 
   transporter.sendMail(mailOptions, function (err, info) {
     if (err) {
-      throw new Error('Please Enter a valid Email Address');
+      console.log(err);
+      // throw new Error('Please Enter a valid Email Address');
     } else if (info.response.ok) {
     }
   });
